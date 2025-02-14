@@ -4,6 +4,7 @@ from tkcalendar import DateEntry
 from datetime import datetime
 import sqlite3, re
 import banco
+from PIL import Image, ImageTk  # Importa a biblioteca para manipular imagens
 
 
 class OrcamentoApp():
@@ -14,11 +15,26 @@ class OrcamentoApp():
         self.janela.geometry("600x550")
         self.janela.resizable(False, False)
         self.centralizar_janela()  # Chama a função para centralizar a janela
+        self.criar_menu()
+        self.logoinicial()
         self.divisorias()
-        # self.servicos()
-        self.tree_itens()
-        self.componentes()
+        # self.componentes()
         self.janela.mainloop()
+    def logoinicial(self):
+        """ Adiciona um exemplo de widget dentro do frame gerais """
+        """ Adiciona uma imagem ao Label """
+        caminho_imagem = "logo.png"  # Substitua pelo caminho da sua imagem
+        try:
+            imagem = Image.open(caminho_imagem)  # Abre a imagem
+            self.foto = ImageTk.PhotoImage(imagem)  # Converte para formato compatível com Tkinter
+            # Adiciona ao Label
+            self.lbllogo = tk.Label(self.janela, image=self.foto)
+            self.lbllogo.pack(pady=10)  # Exibe a imagem na interface
+
+        except Exception as e:
+            print(f"Erro ao carregar a imagem: {e}")
+
+
     def centralizar_janela(self):
         """ Centraliza a janela no meio da tela """
         self.janela.update_idletasks()  # Atualiza para pegar tamanho real
@@ -33,6 +49,39 @@ class OrcamentoApp():
         pos_y = (altura_tela - altura) // 2
 
         self.janela.geometry(f"+{pos_x}+{pos_y}")  # Aplica a posição
+
+    def novo_orcamento(self):
+        """ Ação ao clicar em 'Novo' """
+        self.lbllogo.destroy()
+        self.componentes()
+    def criar_menu(self):
+        """ Cria um menu na janela """
+        menu_bar = tk.Menu(self.janela)
+
+        # Menu Arquivo
+        menu_arquivo = tk.Menu(menu_bar, tearoff=0)
+        menu_arquivo.add_command(label="Novo", command=self.novo_orcamento) #
+        menu_arquivo.add_command(label="Abrir")
+        menu_arquivo.add_separator()
+        menu_arquivo.add_command(label="Sair", command=self.janela.quit)
+        menu_bar.add_cascade(label="Arquivo", menu=menu_arquivo)
+
+        # Menu Exibir
+        menu_exibir = tk.Menu(menu_bar, tearoff=0)
+        menu_exibir.add_command(label="Imprimir", command=self.exibir_orcamentos)
+        menu_bar.add_cascade(label="Exibir", menu=menu_exibir)
+
+        # Menu Sobre
+        menu_sobre = tk.Menu(menu_bar, tearoff=0)
+        menu_sobre.add_command(label="Sobre", command=self.mostrar_sobre)
+        menu_bar.add_cascade(label="Ajuda", menu=menu_sobre)
+
+        self.janela.config(menu=menu_bar)
+
+    def mostrar_sobre(self):
+        """ Exibe uma mensagem sobre o programa """
+        tk.messagebox.showinfo("Sobre", "Sistema de Orçamentos v1.0\nDesenvolvido por Mardio")
+
     def divisorias(self):
         # Criando um LabelFrame com legenda e borda
         self.lblf_gerais = ttk.LabelFrame(self.janela, text="Informações Gerais", padding=10)
@@ -223,6 +272,58 @@ class OrcamentoApp():
             conn.commit()
             conn.close()
             messagebox.showinfo("Sucesso", "Dados salvos com sucesso no banco de dados.")
+    def exibir_orcamentos(self):
+        """ Cria uma nova janela e exibe os orçamentos em um Treeview """
+        janela_orcamentos = tk.Toplevel(self.janela)
+        janela_orcamentos.title("Lista de Orçamentos")
+        janela_orcamentos.geometry("500x300")
+        janela_orcamentos.transient(self.janela)  # Define como janela filha
+
+        # Criando a Treeview
+        colunas = ("ID", "Cliente", "Responsável", "Descricao", "Data")
+        tree = ttk.Treeview(janela_orcamentos, columns=colunas, show="headings")
+
+        # Definindo os cabeçalhos
+        tree.heading("ID", text="ID")
+        tree.heading("Cliente", text="Cliente")
+        tree.heading("Responsável", text="Responsável")
+        tree.heading("Descricao", text="Descrição")
+        tree.heading("Data", text="Data")
+
+
+        # Definindo os tamanhos das colunas
+        tree.column("ID", width=50, anchor="center")
+        tree.column("Cliente", width=150)  
+        tree.column("Responsável", width=150)
+        tree.column("Descricao", width=150)
+        tree.column("Data", width=100)
+
+        # Inserindo os dados do banco na Treeview
+        orcamentos = self.buscar_orcamentos()
+        for orcamento in orcamentos:
+            tree.insert("", tk.END, values=orcamento)
+        scrollbar_y = ttk.Scrollbar(janela_orcamentos, orient="vertical", command=tree.yview)
+        scrollbar_x = ttk.Scrollbar(janela_orcamentos, orient="horizontal", command=tree.xview)
+        tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+
+        scrollbar_y.pack(side="right", fill="y")
+        scrollbar_x.pack(side="bottom", fill="x")
+
+        tree.pack(expand=True, fill="both", padx=10, pady=10)
+        btn_abrir = ttk.Button(janela_orcamentos, text="Abrir")
+        btn_abrir.pack(pady=10)
+    def buscar_orcamentos(self):
+        """ Busca todos os orçamentos no banco de dados SQLite """
+        conexao = sqlite3.connect("orcamento.db")
+        cursor = conexao.cursor()
+
+        cursor.execute("""
+            SELECT id, cliente, responsavel, descricao, data FROM orcamentos
+        """)
+        resultados = cursor.fetchall()
+
+        conexao.close()
+        return resultados
 
 
 OrcamentoApp()
