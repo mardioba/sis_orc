@@ -109,7 +109,8 @@ def gerar_orcamento_pdf(orcamento_id, nome_arquivo):
         subprocess.run(["open", f"relatorios/{nome_arquivo}"])
 
 # Exemplo de uso
-data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
-datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
-datanome=re.sub(r'\.[0-9]*$', '', datanome)
-gerar_orcamento_pdf(1, f'orcamento_{datanome}.pdf')
+if __name__ == "__main__":
+    data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
+    datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
+    datanome=re.sub(r'\.[0-9]*$', '', datanome)
+    gerar_orcamento_pdf(1, f'orcamento_{datanome}.pdf')

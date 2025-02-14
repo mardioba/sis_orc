@@ -281,37 +281,51 @@ class OrcamentoApp():
 
         # Criando a Treeview
         colunas = ("ID", "Cliente", "Responsável", "Descricao", "Data")
-        tree = ttk.Treeview(janela_orcamentos, columns=colunas, show="headings")
+        self.tree_orcamentos = ttk.Treeview(janela_orcamentos, columns=colunas, show="headings")
 
         # Definindo os cabeçalhos
-        tree.heading("ID", text="ID")
-        tree.heading("Cliente", text="Cliente")
-        tree.heading("Responsável", text="Responsável")
-        tree.heading("Descricao", text="Descrição")
-        tree.heading("Data", text="Data")
+        self.tree_orcamentos.heading("ID", text="ID")
+        self.tree_orcamentos.heading("Cliente", text="Cliente")
+        self.tree_orcamentos.heading("Responsável", text="Responsável")
+        self.tree_orcamentos.heading("Descricao", text="Descrição")
+        self.tree_orcamentos.heading("Data", text="Data")
 
 
         # Definindo os tamanhos das colunas
-        tree.column("ID", width=50, anchor="center")
-        tree.column("Cliente", width=150)  
-        tree.column("Responsável", width=150)
-        tree.column("Descricao", width=150)
-        tree.column("Data", width=100)
+        self.tree_orcamentos.column("ID", width=50, anchor="center")
+        self.tree_orcamentos.column("Cliente", width=150)  
+        self.tree_orcamentos.column("Responsável", width=150)
+        self.tree_orcamentos.column("Descricao", width=150)
+        self.tree_orcamentos.column("Data", width=100)
 
         # Inserindo os dados do banco na Treeview
         orcamentos = self.buscar_orcamentos()
         for orcamento in orcamentos:
-            tree.insert("", tk.END, values=orcamento)
-        scrollbar_y = ttk.Scrollbar(janela_orcamentos, orient="vertical", command=tree.yview)
-        scrollbar_x = ttk.Scrollbar(janela_orcamentos, orient="horizontal", command=tree.xview)
-        tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+            self.tree_orcamentos.insert("", tk.END, values=orcamento)
+        scrollbar_y = ttk.Scrollbar(janela_orcamentos, orient="vertical", command=self.tree_orcamentos.yview)
+        scrollbar_x = ttk.Scrollbar(janela_orcamentos, orient="horizontal", command=self.tree_orcamentos.xview)
+        self.tree_orcamentos.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
 
         scrollbar_y.pack(side="right", fill="y")
         scrollbar_x.pack(side="bottom", fill="x")
 
-        tree.pack(expand=True, fill="both", padx=10, pady=10)
-        btn_abrir = ttk.Button(janela_orcamentos, text="Abrir")
+        self.tree_orcamentos.pack(expand=True, fill="both", padx=10, pady=10)
+        btn_abrir = ttk.Button(janela_orcamentos, text="Abrir Relatório", command=self.abrir_orcamento)
         btn_abrir.pack(pady=10)
+    def abrir_orcamento(self):
+        item_selecionado = self.tree_orcamentos.selection()
+        if not item_selecionado:
+            messagebox.showwarning("Atenção", "Selecione na tabela um orçamento para abrir.")
+            return
+
+        item = item_selecionado[0]  # Pega o primeiro item selecionado
+        orcamento = self.tree_orcamentos.item(item, "values")
+        id=int(orcamento[0])
+        from relatorio import gerar_orcamento_pdf
+        data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
+        datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
+        datanome=re.sub(r'\.[0-9]*$', '', datanome)
+        gerar_orcamento_pdf(id, f'orcamento_{datanome}.pdf')
     def buscar_orcamentos(self):
         """ Busca todos os orçamentos no banco de dados SQLite """
         conexao = sqlite3.connect("orcamento.db")
