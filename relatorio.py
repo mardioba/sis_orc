@@ -6,6 +6,18 @@ import os
 import platform
 from datetime import datetime
 
+def verificar(id_orcamento):
+    dirtorio = 'relatorios'
+    # print(os.listdir(dirtorio))
+    contador = 0
+    for file in os.listdir(dirtorio):
+        v=re.findall(r'^' + str(id_orcamento) + r'_', file)
+        if v:
+            caminho = dirtorio + '/' + file
+            return True, caminho
+        else:
+            return None
+
 # Função para gerar o PDF do orçamento com imagem
 def gerar_orcamento_pdf(orcamento_id, nome_arquivo):
     # Verificando pasta relatorios
@@ -34,7 +46,7 @@ def gerar_orcamento_pdf(orcamento_id, nome_arquivo):
     itens = cursor.fetchall()
     
     # Criar o PDF
-    c = canvas.Canvas(f"relatorios/{nome_arquivo}", pagesize=letter)
+    c = canvas.Canvas(f"relatorios/{orcamento_id}_{nome_arquivo}", pagesize=letter)
     
     # Definir algumas variáveis para o layout do PDF
     largura, altura = letter
@@ -109,8 +121,19 @@ def gerar_orcamento_pdf(orcamento_id, nome_arquivo):
         subprocess.run(["open", f"relatorios/{nome_arquivo}"])
 
 # Exemplo de uso
-if __name__ == "__main__":
-    data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
-    datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
-    datanome=re.sub(r'\.[0-9]*$', '', datanome)
-    gerar_orcamento_pdf(1, f'orcamento_{datanome}.pdf')
+# if __name__ == "__main__":
+#     data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
+#     datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
+#     datanome=re.sub(r'\.[0-9]*$', '', datanome)
+#     gerar_orcamento_pdf(1, f'orcamento_{datanome}.pdf')
+# rs=verificar(1)
+# if rs:
+#     print(rs[1])
+#     # Abrir o PDF automaticamente
+#     sistema = platform.system()
+#     if sistema == "Linux":
+#         subprocess.run(["xdg-open", rs[1]])  # Abre no Linux (Debian)
+#     elif sistema == "Windows":
+#         os.startfile(rs[1])  # Abre no Windows
+#     elif sistema == "Darwin":  # macOS
+#         subprocess.run(["open", rs[1]])

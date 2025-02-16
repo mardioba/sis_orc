@@ -11,6 +11,7 @@ class OrcamentoApp():
     def __init__(self):
         pass
         self.janela = tk.Tk()
+        # self.janela.iconbitmap("logo.ico")
         self.janela.title("Exemplo de LabelFrame")
         self.janela.geometry("600x550")
         self.janela.resizable(False, False)
@@ -33,8 +34,6 @@ class OrcamentoApp():
 
         except Exception as e:
             print(f"Erro ao carregar a imagem: {e}")
-
-
     def centralizar_janela(self):
         """ Centraliza a janela no meio da tela """
         self.janela.update_idletasks()  # Atualiza para pegar tamanho real
@@ -49,7 +48,6 @@ class OrcamentoApp():
         pos_y = (altura_tela - altura) // 2
 
         self.janela.geometry(f"+{pos_x}+{pos_y}")  # Aplica a posição
-
     def novo_orcamento(self):
         """ Ação ao clicar em 'Novo' """
         self.lbllogo.destroy()
@@ -77,11 +75,9 @@ class OrcamentoApp():
         menu_bar.add_cascade(label="Ajuda", menu=menu_sobre)
 
         self.janela.config(menu=menu_bar)
-
     def mostrar_sobre(self):
         """ Exibe uma mensagem sobre o programa """
         tk.messagebox.showinfo("Sobre", "Sistema de Orçamentos v1.0\nDesenvolvido por Mardio")
-
     def divisorias(self):
         # Criando um LabelFrame com legenda e borda
         self.lblf_gerais = ttk.LabelFrame(self.janela, text="Informações Gerais", padding=10)
@@ -155,6 +151,8 @@ class OrcamentoApp():
         self.ent_idorcamento.delete(0, "end")
         self.ent_idorcamento.insert(0, self.ultimo_id)
         self.ent_idorcamento.config(state="readonly")
+    def limpar_tree_itens(self):
+            self.tv_itens.delete(*self.tv_itens.get_children())
     def tree_itens(self):
         """ Adicionando Treeview e widgets no frame """
         self.lbl_itens = ttk.Label(self.lblf_itens, text="Itens:")
@@ -194,7 +192,6 @@ class OrcamentoApp():
         self.btn_editar.grid(row=1, column=1, padx=5, pady=5)
         self.btn_salvar = ttk.Button(self.lblf_itens, text="Salvar", compound="left", command=self.salvar_banco)
         self.btn_salvar.grid(row=1, column=2, padx=5, pady=5)
-
     def excluir_linha(self):
         item_selecionado = self.tv_itens.selection()
         if not item_selecionado:
@@ -203,7 +200,6 @@ class OrcamentoApp():
         
         for item in item_selecionado:
             self.tv_itens.delete(item)
-
     def editar_linha(self):
         item_selecionado = self.tv_itens.selection()
 
@@ -223,7 +219,6 @@ class OrcamentoApp():
         self.ent_valor.delete(0, "end")
         self.ent_valor.insert(0, valor)
         self.excluir_linha()
-
     def adicionar_item(self):
         """ Adiciona os dados dos campos ao Treeview """
         id_orcamento = self.ent_idorcamento.get()
@@ -237,7 +232,6 @@ class OrcamentoApp():
         self.ent_quantidade.delete(0, "end")
         self.ent_valor.delete(0, "end")
         self.ent_servicos.focus_set()
-
     def validar_servicos(self):
         def validar_decimal(numero):
             padrao = r"^-?\d+(?:[.,]\d+)?$"
@@ -257,7 +251,6 @@ class OrcamentoApp():
             self.ent_valor.focus_set()
         else:
             self.adicionar_item()
-
     def salvar_banco(self):
             """ Salva todos os dados da Treeview no banco de dados """
             conn = sqlite3.connect('orcamento.db')
@@ -271,6 +264,7 @@ class OrcamentoApp():
                         (values[0], values[1], values[2], values[3]))
             conn.commit()
             conn.close()
+            self.limpar_tree_itens()
             messagebox.showinfo("Sucesso", "Dados salvos com sucesso no banco de dados.")
     def exibir_orcamentos(self):
         """ Cria uma nova janela e exibe os orçamentos em um Treeview """
@@ -310,10 +304,11 @@ class OrcamentoApp():
         scrollbar_x.pack(side="bottom", fill="x")
 
         self.tree_orcamentos.pack(expand=True, fill="both", padx=10, pady=10)
-        btn_abrir = ttk.Button(janela_orcamentos, text="Abrir Relatório", command=self.abrir_orcamento)
+        btn_abrir = ttk.Button(janela_orcamentos, text="Abrir Orçamento", command=self.abrir_orcamento)
         btn_abrir.pack(pady=10)
     def abrir_orcamento(self):
         item_selecionado = self.tree_orcamentos.selection()
+
         if not item_selecionado:
             messagebox.showwarning("Atenção", "Selecione na tabela um orçamento para abrir.")
             return
@@ -321,11 +316,16 @@ class OrcamentoApp():
         item = item_selecionado[0]  # Pega o primeiro item selecionado
         orcamento = self.tree_orcamentos.item(item, "values")
         id=int(orcamento[0])
-        from relatorio import gerar_orcamento_pdf
-        data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
-        datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
-        datanome=re.sub(r'\.[0-9]*$', '', datanome)
-        gerar_orcamento_pdf(id, f'orcamento_{datanome}.pdf')
+        from relatorio import gerar_orcamento_pdf, verificar
+        rs=verificar(id)
+        if rs:
+            from abrirpdf import abrir_pdf
+            abrir_pdf(rs[1])
+        else:
+            data_atual_BR= datetime.now() #.strftime("%d-%m-%Y")
+            datanome=str(data_atual_BR).replace(':','_').replace(' ','_')
+            datanome=re.sub(r'\.[0-9]*$', '', datanome)
+            gerar_orcamento_pdf(id, f'orcamento_{datanome}.pdf')
     def buscar_orcamentos(self):
         """ Busca todos os orçamentos no banco de dados SQLite """
         conexao = sqlite3.connect("orcamento.db")
