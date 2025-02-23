@@ -2,10 +2,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 from datetime import datetime
-import sqlite3, re
+import sqlite3, re,os
 import banco
 from PIL import Image, ImageTk  # Importa a biblioteca para manipular imagens
-
+from tkinter import PhotoImage
 
 class OrcamentoApp():
     def __init__(self):
@@ -24,6 +24,11 @@ class OrcamentoApp():
     def logoinicial(self):
         """ Adiciona um exemplo de widget dentro do frame gerais """
         """ Adiciona uma imagem ao Label """
+        dir_atual = os.path.dirname(os.path.abspath(__file__))
+        icone = os.path.join(dir_atual, "logo.png")
+
+        img_icone = PhotoImage(file=icone)  # Cria a imagem do ícone
+        self.janela.iconphoto(True, img_icone)  # Define o ícone da janela
         caminho_imagem = "logo.png"  # Substitua pelo caminho da sua imagem
         try:
             imagem = Image.open(caminho_imagem)  # Abre a imagem
