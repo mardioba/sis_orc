@@ -8,9 +8,10 @@ from PIL import Image, ImageTk  # Importa a biblioteca para manipular imagens
 from tkinter import PhotoImage
 
 class OrcamentoApp():
-    def __init__(self):
+    def __init__(self, root):
         self.dir_relatorio()
-        self.janela = tk.Tk()
+        # self.janela = tk.Tk()
+        self.janela = root  # Usa a janela passada como argumento
         self.janela.title("Exemplo de LabelFrame")
         self.janela.geometry("600x550")
         self.janela.resizable(False, False)
@@ -347,4 +348,7 @@ class OrcamentoApp():
             os.makedirs("relatorios")
 
 
-OrcamentoApp()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = OrcamentoApp(root)
+    root.mainloop()
