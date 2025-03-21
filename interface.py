@@ -9,9 +9,8 @@ from tkinter import PhotoImage
 
 class OrcamentoApp():
     def __init__(self):
-        pass
+        self.dir_relatorio()
         self.janela = tk.Tk()
-        # self.janela.iconbitmap("logo.ico")
         self.janela.title("Exemplo de LabelFrame")
         self.janela.geometry("600x550")
         self.janela.resizable(False, False)
@@ -19,13 +18,12 @@ class OrcamentoApp():
         self.criar_menu()
         self.logoinicial()
         self.divisorias()
-        # self.componentes()
         self.janela.mainloop()
     def logoinicial(self):
         """ Adiciona um exemplo de widget dentro do frame gerais """
         """ Adiciona uma imagem ao Label """
         dir_atual = os.path.dirname(os.path.abspath(__file__))
-        icone = os.path.join(dir_atual, "logo.png")
+        icone = "logo.png"
 
         img_icone = PhotoImage(file=icone)  # Cria a imagem do ícone
         self.janela.iconphoto(True, img_icone)  # Define o ícone da janela
@@ -34,8 +32,8 @@ class OrcamentoApp():
             imagem = Image.open(caminho_imagem)  # Abre a imagem
             self.foto = ImageTk.PhotoImage(imagem)  # Converte para formato compatível com Tkinter
             # Adiciona ao Label
-            self.lbllogo = tk.Label(self.janela, image=self.foto)
-            self.lbllogo.pack(pady=10)  # Exibe a imagem na interface
+            self.lbllogo = tk.Label(self.janela, image=self.foto, bg="white")
+            self.lbllogo.pack(padx=0, pady=10)  # Exibe a imagem na interface
 
         except Exception as e:
             print(f"Erro ao carregar a imagem: {e}")
@@ -85,12 +83,12 @@ class OrcamentoApp():
         tk.messagebox.showinfo("Sobre", "Sistema de Orçamentos v1.0\nDesenvolvido por Mardio")
     def divisorias(self):
         # Criando um LabelFrame com legenda e borda
-        self.lblf_gerais = ttk.LabelFrame(self.janela, text="Informações Gerais", padding=10)
-        self.lblf_gerais.pack(fill="x")
-        self.lblf_servicos = ttk.LabelFrame(self.janela, text="Serviços", padding=10)
-        self.lblf_servicos.pack(fill="x")
-        self.lblf_itens = ttk.LabelFrame(self.janela, text="Itens", padding=10)
-        self.lblf_itens.pack(fill="x")
+        self.lblf_gerais = ttk.LabelFrame(self.janela, text="Informações Gerais", padding=5, borderwidth=0, relief="flat")
+        self.lblf_gerais.pack(fill="x", ipady=0)
+        self.lblf_servicos = ttk.LabelFrame(self.janela, text="Serviços", padding=5, borderwidth=0, relief="flat")
+        self.lblf_servicos.pack(fill="x", ipady=0)
+        self.lblf_itens = ttk.LabelFrame(self.janela, text="Itens", padding=5, borderwidth=0, relief="flat")
+        self.lblf_itens.pack(fill="x", ipady=0)
         # Adicionando um exemplo de widget dentro do frame
     def componentes(self):
         # Adicionando um exemplo de widget dentro do frame gerais
@@ -343,6 +341,10 @@ class OrcamentoApp():
 
         conexao.close()
         return resultados
+    def dir_relatorio(self):
+        """ Cria o diretório de relatórios se não existir """
+        if not os.path.exists("relatorios"):
+            os.makedirs("relatorios")
 
 
 OrcamentoApp()

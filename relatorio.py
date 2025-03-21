@@ -114,11 +114,11 @@ def gerar_orcamento_pdf(orcamento_id, nome_arquivo):
     # Abrir o PDF automaticamente
     sistema = platform.system()
     if sistema == "Linux":
-        subprocess.run(["xdg-open", f"relatorios/{nome_arquivo}"])  # Abre no Linux (Debian)
+        subprocess.run(["xdg-open", f"relatorios/{orcamento_id}_{nome_arquivo}"])  # Abre no Linux (Debian)
     elif sistema == "Windows":
-        os.startfile(nome_arquivo)  # Abre no Windows
+        os.startfile(f"relatorios/{orcamento_id}_{nome_arquivo}")  # Abre no Windows
     elif sistema == "Darwin":  # macOS
-        subprocess.run(["open", f"relatorios/{nome_arquivo}"])
+        subprocess.run(["open", f"relatorios/{orcamento_id}_{nome_arquivo}"])
 
 # Exemplo de uso
 # if __name__ == "__main__":
