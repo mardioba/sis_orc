@@ -12,6 +12,6 @@ def abrir_pdf(caminho_pdf):
     # Abre o PDF no navegador padrão
     webbrowser.open(f"file://{pdf_path}")
 
-if __name__ == "__main__":
-    caminho_pdf = "relatorios/1_orcamento_2025-02-16_09_57_23.pdf"
-    abrir_pdf(caminho_pdf)
+# if __name__ == "__main__":
+#     caminho_pdf = "relatorios/1_orcamento_2025-02-16_09_57_23.pdf"
+#     abrir_pdf(caminho_pdf)

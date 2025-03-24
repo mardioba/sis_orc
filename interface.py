@@ -8,9 +8,10 @@ from PIL import Image, ImageTk  # Importa a biblioteca para manipular imagens
 from tkinter import PhotoImage
 
 class OrcamentoApp():
-    def __init__(self):
+    def __init__(self, root):
         self.dir_relatorio()
-        self.janela = tk.Tk()
+        # self.janela = tk.Tk()
+        self.janela = root  # Usa a janela passada como argumento
         self.janela.title("Exemplo de LabelFrame")
         self.janela.geometry("600x550")
         self.janela.resizable(False, False)
@@ -273,7 +274,7 @@ class OrcamentoApp():
         """ Cria uma nova janela e exibe os orçamentos em um Treeview """
         janela_orcamentos = tk.Toplevel(self.janela)
         janela_orcamentos.title("Lista de Orçamentos")
-        janela_orcamentos.geometry("500x300")
+        janela_orcamentos.geometry("800x300")
         janela_orcamentos.transient(self.janela)  # Define como janela filha
 
         # Criando a Treeview
@@ -290,10 +291,10 @@ class OrcamentoApp():
 
         # Definindo os tamanhos das colunas
         self.tree_orcamentos.column("ID", width=50, anchor="center")
-        self.tree_orcamentos.column("Cliente", width=150)  
-        self.tree_orcamentos.column("Responsável", width=150)
-        self.tree_orcamentos.column("Descricao", width=150)
-        self.tree_orcamentos.column("Data", width=100)
+        self.tree_orcamentos.column("Cliente", width=150, anchor="center")  
+        self.tree_orcamentos.column("Responsável", width=150, anchor="center")
+        self.tree_orcamentos.column("Descricao", width=250, anchor="center")
+        self.tree_orcamentos.column("Data", width=100, anchor="center")
 
         # Inserindo os dados do banco na Treeview
         orcamentos = self.buscar_orcamentos()
@@ -347,4 +348,7 @@ class OrcamentoApp():
             os.makedirs("relatorios")
 
 
-OrcamentoApp()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = OrcamentoApp(root)
+    root.mainloop()
