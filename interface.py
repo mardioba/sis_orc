@@ -6,6 +6,9 @@ import sqlite3, re,os
 import banco
 from PIL import Image, ImageTk  # Importa a biblioteca para manipular imagens
 from tkinter import PhotoImage
+import locale
+
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')  # Define o locale para português do Brasil
 
 class OrcamentoApp():
     def __init__(self, root):
@@ -99,7 +102,7 @@ class OrcamentoApp():
         self.lbl_responsavel.grid(row=0, column=2, padx=5, pady=5)
         self.lbl_data = ttk.Label(self.lblf_gerais, text="Data:")
         self.lbl_data.grid(row=1, column=0, padx=5, pady=5)
-        self.ent_data = DateEntry(self.lblf_gerais, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.ent_data = DateEntry(self.lblf_gerais, width=12, background='darkblue', foreground='white', borderwidth=2, locale='pt_BR')
         self.ent_data.set_date(datetime.now())
         self.ent_data.grid(row=1, column=1, padx=5, pady=5)
         self.lbl_descricao = ttk.Label(self.lblf_gerais, text="Descricão:")
@@ -309,7 +312,7 @@ class OrcamentoApp():
 
         self.tree_orcamentos.pack(expand=True, fill="both", padx=10, pady=10)
         btn_abrir = ttk.Button(janela_orcamentos, text="Abrir Orçamento", command=self.abrir_orcamento)
-        btn_abrir.pack(pady=10)
+        btn_abrir.pack(pady=1)
     def abrir_orcamento(self):
         item_selecionado = self.tree_orcamentos.selection()
 

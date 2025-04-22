@@ -1,1 +1,1 @@
-pyinstaller -F --onefile --hidden-import=tkcalendar --hidden-import=reportlab --hidden-import=PIL --hidden-import=Pillow --hidden-import=PIL._tkinter_finder main.py
+pyinstaller -F --noconsole --onefile --hidden-import=tkcalendar --hidden-import=reportlab --hidden-import=locale --hidden-import=PIL --hidden-import=Pillow --hidden-import=PIL._tkinter_finder main.py
