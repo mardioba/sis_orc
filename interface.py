@@ -199,6 +199,20 @@ class OrcamentoApp():
         self.btn_editar.grid(row=1, column=1, padx=5, pady=5)
         self.btn_salvar = ttk.Button(self.lblf_itens, text="Salvar", compound="left", command=self.salvar_banco)
         self.btn_salvar.grid(row=1, column=2, padx=5, pady=5)
+        # Label do total
+        self.lbl_total = ttk.Label(self.lblf_itens, text="Total: R$ 0.00", font=("Arial", 10, "bold"), background="white")
+        self.lbl_total.grid(row=2, column=1, padx=5, pady=5, sticky="e")
+    def atualizar_total(self):
+        total = 0.0
+        for item in self.tv_itens.get_children():
+            valores = self.tv_itens.item(item, "values")
+            try:
+                qtd = float(valores[2].replace(",", "."))
+                valor_unit = float(valores[3].replace(",", "."))
+                total += qtd * valor_unit
+            except ValueError:
+                continue
+        self.lbl_total.config(text=f"Total: R$ {total:.2f}")
     def excluir_linha(self):
         item_selecionado = self.tv_itens.selection()
         if not item_selecionado:
@@ -207,6 +221,7 @@ class OrcamentoApp():
         
         for item in item_selecionado:
             self.tv_itens.delete(item)
+        self.atualizar_total()
     def editar_linha(self):
         item_selecionado = self.tv_itens.selection()
 
@@ -239,6 +254,7 @@ class OrcamentoApp():
         self.ent_quantidade.delete(0, "end")
         self.ent_valor.delete(0, "end")
         self.ent_servicos.focus_set()
+        self.atualizar_total()
     def validar_servicos(self):
         def validar_decimal(numero):
             padrao = r"^-?\d+(?:[.,]\d+)?$"
